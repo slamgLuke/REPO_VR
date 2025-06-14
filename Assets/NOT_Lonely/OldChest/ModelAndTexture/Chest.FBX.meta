@@ -6,8 +6,15 @@ labels:
 - Chest
 - animated
 - oldchest
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20179
+  packageName: Animated Old Chest
+  packageVersion: 1.1
+  assetPath: Assets/NOT_Lonely/OldChest/ModelAndTexture/Chest.FBX
+  uploadId: 763357
 ModelImporter:
-  serializedVersion: 21300
+  serializedVersion: 22200
   internalIDToNameTable:
   - first:
       1: 100000
@@ -85,15 +92,13 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
     motionNodeName: 
-    rigImportErrors: 
-    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 1
+    animationCompression: 2
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -105,7 +110,7 @@ ModelImporter:
       name: ChestAnim
       takeName: Take 001
       internalID: 0
-      firstFrame: 0
+      firstFrame: 10
       lastFrame: 95
       wrapMode: 0
       orientationOffsetY: 0
@@ -154,6 +159,7 @@ ModelImporter:
     addColliders: 1
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 0
     importBlendShapes: 1
     importCameras: 0
@@ -181,6 +187,7 @@ ModelImporter:
     secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 0
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -213,15 +220,9 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
   remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 20179
-  packageName: Animated Old Chest
-  packageVersion: 1.1
-  assetPath: Assets/NOT_Lonely/OldChest/ModelAndTexture/Chest.FBX
-  uploadId: 763357
