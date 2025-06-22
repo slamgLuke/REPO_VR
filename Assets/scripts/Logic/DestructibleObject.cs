@@ -1,6 +1,9 @@
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 using System;
 
+[RequireComponent(typeof(Collider))]
 public class DestructibleObject : MonoBehaviour
 {
     [Header("Health Settings")]
@@ -19,28 +22,50 @@ public class DestructibleObject : MonoBehaviour
 
     public event Action<float> OnValueChanged;
 
+    // UI
+    private GameObject canvasGO;
+    private TextMeshProUGUI valueText;
+
     void Start()
     {
         currentHealth = maxHealth;
+
+        CreateValueLabel();
+        UpdateValueLabel();
+
         OnValueChanged?.Invoke(Value);
     }
 
     void Update()
     {
+        if (canvasGO != null && Camera.main != null)
+        {
+            Collider col = GetComponent<Collider>();
+            if (col == null) return;
+
+            Vector3 center = col.bounds.center;
+            Vector3 toCamera = (Camera.main.transform.position - center).normalized;
+
+            // Coloca el label al centro del objeto + hacia el jugador (solo un poco)
+            float offset = col.bounds.extents.magnitude * 0.15f; // depende del tamaño
+            canvasGO.transform.position = center + toCamera * offset;
+
+            // Billboard que mira al jugador (horizontal)
+            Vector3 lookDir = Camera.main.transform.position - canvasGO.transform.position;
+            lookDir.y = 0f;
+            if (lookDir.sqrMagnitude > 0.001f)
+            {
+                canvasGO.transform.rotation = Quaternion.LookRotation(lookDir);
+                canvasGO.transform.Rotate(0, 180f, 0); // mirar hacia el jugador
+            }
+        }
+
+        // Destrucción
         if (currentHealth <= 0f)
         {
-            Debug.Log($"{gameObject.name} destroyed.");
+            if (canvasGO != null) Destroy(canvasGO);
             Destroy(gameObject);
         }
-    }
-
-    public void TakeDamage(float amount)
-    {
-        currentHealth -= amount;
-        currentHealth = Mathf.Max(currentHealth, 0f);
-        Debug.Log($"{gameObject.name} took {amount} damage. Health: {currentHealth}. Value: {Value}");
-
-        OnValueChanged?.Invoke(Value);
     }
 
     void OnCollisionEnter(Collision collision)
@@ -55,8 +80,80 @@ public class DestructibleObject : MonoBehaviour
         }
     }
 
+    void TakeDamage(float amount)
+    {
+        currentHealth -= amount;
+        currentHealth = Mathf.Max(currentHealth, 0f);
+        Debug.Log($"{gameObject.name} took {amount} damage. Health: {currentHealth}. Value: {Value}");
+
+        OnValueChanged?.Invoke(Value);
+        UpdateValueLabel();
+    }
+
     public float GetCurrentValue()
     {
         return Value;
+    }
+
+    private void UpdateValueLabel()
+    {
+        if (valueText != null)
+        {
+            valueText.text = $"${(int)Value}";
+        }
+    }
+    private void CreateValueLabel()
+    {
+        // Crear Canvas
+        canvasGO = new GameObject("ValueCanvas");
+        canvasGO.transform.SetParent(transform, false);
+
+        // Posición: al frente en local Z
+        canvasGO.transform.localPosition = new Vector3(0f, 0f, 0f);
+        // Rotación: alineada con el mundo, no inclinada
+        canvasGO.transform.localRotation = Quaternion.identity;
+        // Escala razonable
+        canvasGO.transform.localScale = Vector3.one * 1f;
+
+        // Configurar Canvas
+        var canvas = canvasGO.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.WorldSpace;
+        var rect = canvas.GetComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(10f, 1f);
+
+        canvasGO.AddComponent<CanvasScaler>();
+        canvasGO.AddComponent<GraphicRaycaster>();
+
+        // Fondo (opcional)
+        //var bg = new GameObject("Background");
+        //bg.transform.SetParent(canvasGO.transform, false);
+        //var img = bg.AddComponent<UnityEngine.UI.Image>();
+        //img.color = new Color(0, 0, 0, 0F);
+        //var bgRect = bg.GetComponent<RectTransform>();
+        //bgRect.anchorMin = Vector2.zero;
+        //bgRect.anchorMax = Vector2.one;
+        //bgRect.offsetMin = Vector2.zero;
+        //bgRect.offsetMax = Vector2.zero;
+
+        // Texto
+        var textGO = new GameObject("ValueText");
+        textGO.transform.SetParent(canvasGO.transform, false);
+        valueText = textGO.AddComponent<TextMeshProUGUI>();
+        valueText.text = "$ 0";
+        valueText.fontSize = 1;                 // ajuste fino
+        valueText.alignment = TextAlignmentOptions.Center;
+        valueText.color = Color.green;
+        valueText.fontMaterial.renderQueue = 5000; // como Overlay
+
+        Material overlayMat = new Material(Shader.Find("TextMeshPro/Distance Field Overlay"));
+        overlayMat.mainTexture = valueText.font.material.mainTexture; // usar textura de la fuente
+
+        valueText.fontSharedMaterial = overlayMat;
+
+        var txtRect = textGO.GetComponent<RectTransform>();
+        txtRect.anchorMin = Vector2.zero;
+        txtRect.anchorMax = Vector2.one;
+        txtRect.offsetMin = Vector2.zero;
+        txtRect.offsetMax = Vector2.zero;
     }
 }
