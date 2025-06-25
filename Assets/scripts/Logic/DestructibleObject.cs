@@ -46,26 +46,32 @@ public class DestructibleObject : MonoBehaviour
             Vector3 center = col.bounds.center;
             Vector3 toCamera = (Camera.main.transform.position - center).normalized;
 
-            // Coloca el label al centro del objeto + hacia el jugador (solo un poco)
-            float offset = col.bounds.extents.magnitude * 0.15f; // depende del tamaño
+            float offset = col.bounds.extents.magnitude * 0.15f;
             canvasGO.transform.position = center + toCamera * offset;
 
-            // Billboard que mira al jugador (horizontal)
+            // Billboard horizontal
             Vector3 lookDir = Camera.main.transform.position - canvasGO.transform.position;
             lookDir.y = 0f;
             if (lookDir.sqrMagnitude > 0.001f)
             {
                 canvasGO.transform.rotation = Quaternion.LookRotation(lookDir);
-                canvasGO.transform.Rotate(0, 180f, 0); // mirar hacia el jugador
+                canvasGO.transform.Rotate(0, 180f, 0);
             }
+
+            // 🔒 Escala fija
+            canvasGO.transform.localScale = Vector3.one * 0.1f;
         }
 
-        // Destrucción
         if (currentHealth <= 0f)
         {
             if (canvasGO != null) Destroy(canvasGO);
             Destroy(gameObject);
         }
+    }
+
+    void OnDestroy()
+    {
+        if (canvasGO != null) Destroy(canvasGO);
     }
 
     void OnCollisionEnter(Collision collision)
@@ -106,8 +112,7 @@ public class DestructibleObject : MonoBehaviour
     {
         // Crear Canvas
         canvasGO = new GameObject("ValueCanvas");
-        canvasGO.transform.SetParent(transform, false);
-
+        canvasGO.transform.SetParent(null); // canvas está fuera de jerarquía
         // Posición: al frente en local Z
         canvasGO.transform.localPosition = new Vector3(0f, 0f, 0f);
         // Rotación: alineada con el mundo, no inclinada
