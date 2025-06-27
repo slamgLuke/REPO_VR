@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System;
 
 [RequireComponent(typeof(Collider))]
+[RequireComponent(typeof(AudioSource))]
 public class DestructibleObject : MonoBehaviour
 {
     [Header("Health Settings")]
@@ -22,6 +23,12 @@ public class DestructibleObject : MonoBehaviour
 
     public event Action<float> OnValueChanged;
 
+    [Header("Audio Settings")]
+    public AudioClip deathSound;
+    public AudioClip hitSound;
+
+    private AudioSource audioSource;
+
     // UI
     private GameObject canvasGO;
     private TextMeshProUGUI valueText;
@@ -29,6 +36,11 @@ public class DestructibleObject : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
+
+        // Configuración de Audio
+        audioSource = GetComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 1.0f;
 
         CreateValueLabel();
         UpdateValueLabel();
@@ -64,6 +76,11 @@ public class DestructibleObject : MonoBehaviour
 
         if (currentHealth <= 0f)
         {
+            if (deathSound != null)
+            {
+                AudioSource.PlayClipAtPoint(deathSound, transform.position);
+            }
+
             if (canvasGO != null) Destroy(canvasGO);
             Destroy(gameObject);
         }
@@ -80,6 +97,10 @@ public class DestructibleObject : MonoBehaviour
 
         if (impactForce > 2f)
         {
+            if (hitSound != null)
+            {
+                audioSource.PlayOneShot(hitSound);
+            }
             float baseDamage = impactForce * 2f;
             float adjustedDamage = baseDamage / Mathf.Max(collisionResistance, 0.01f); // evitar div/0
             TakeDamage(adjustedDamage);
