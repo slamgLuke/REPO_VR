@@ -46707,6 +46707,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 586851636643364934, guid: 587de6943a7e2e242b4160e02cfaef23, type: 3}
+      propertyPath: breakParticles
+      value: 
+      objectReference: {fileID: 9143755654966979650, guid: ce1ca9c5acd4629458919f84be28279b, type: 3}
+    - target: {fileID: 586851636643364934, guid: 587de6943a7e2e242b4160e02cfaef23, type: 3}
+      propertyPath: fullHealthValue
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 586851636643364934, guid: 587de6943a7e2e242b4160e02cfaef23, type: 3}
+      propertyPath: zeroHealthValue
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 5926544696429006857, guid: 587de6943a7e2e242b4160e02cfaef23, type: 3}
       propertyPath: m_LocalPosition.x
       value: 30.619549
@@ -46764,6 +46776,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7907048826688215226, guid: f81a8b5ec12f3bf468cde0fb6bfaa1f3, type: 3}
+      propertyPath: breakParticles
+      value: 
+      objectReference: {fileID: 9143755654966979650, guid: ce1ca9c5acd4629458919f84be28279b, type: 3}
+    - target: {fileID: 7907048826688215226, guid: f81a8b5ec12f3bf468cde0fb6bfaa1f3, type: 3}
+      propertyPath: fullHealthValue
+      value: 350
+      objectReference: {fileID: 0}
+    - target: {fileID: 7907048826688215226, guid: f81a8b5ec12f3bf468cde0fb6bfaa1f3, type: 3}
+      propertyPath: zeroHealthValue
+      value: 75
+      objectReference: {fileID: 0}
     - target: {fileID: 8513759264284113475, guid: f81a8b5ec12f3bf468cde0fb6bfaa1f3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 31.20044
@@ -46872,6 +46896,18 @@ PrefabInstance:
     - target: {fileID: 3304373529064288519, guid: bf93f5206f206c442a8f998694e0fa8d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4168352789254030619, guid: bf93f5206f206c442a8f998694e0fa8d, type: 3}
+      propertyPath: breakParticles
+      value: 
+      objectReference: {fileID: 9143755654966979650, guid: ce1ca9c5acd4629458919f84be28279b, type: 3}
+    - target: {fileID: 4168352789254030619, guid: bf93f5206f206c442a8f998694e0fa8d, type: 3}
+      propertyPath: fullHealthValue
+      value: 725
+      objectReference: {fileID: 0}
+    - target: {fileID: 4168352789254030619, guid: bf93f5206f206c442a8f998694e0fa8d, type: 3}
+      propertyPath: zeroHealthValue
+      value: 225
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

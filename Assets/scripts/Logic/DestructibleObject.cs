@@ -29,6 +29,9 @@ public class DestructibleObject : MonoBehaviour
 
     private AudioSource audioSource;
 
+    [Header("Particles")]
+    public GameObject breakParticles;
+
     // UI
     private GameObject canvasGO;
     private TextMeshProUGUI valueText;
@@ -80,6 +83,8 @@ public class DestructibleObject : MonoBehaviour
             {
                 AudioSource.PlayClipAtPoint(deathSound, transform.position);
             }
+
+            if (breakParticles != null) Instantiate(breakParticles, transform.position, transform.rotation);
 
             if (canvasGO != null) Destroy(canvasGO);
             Destroy(gameObject);
