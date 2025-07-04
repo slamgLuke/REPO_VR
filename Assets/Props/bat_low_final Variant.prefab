@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3655817148589423663}
   - component: {fileID: 7381704039610572907}
   - component: {fileID: 2085550852898852742}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ISDK_DistanceHandGrabInteraction
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -165,6 +165,10 @@ PrefabInstance:
     - target: {fileID: 4846560092919258675, guid: 7984a650413890044a20dbce893fad53, type: 3}
       propertyPath: m_Name
       value: bat_low_final Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 4846560092919258675, guid: 7984a650413890044a20dbce893fad53, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 5190856059383252105, guid: 7984a650413890044a20dbce893fad53, type: 3}
       propertyPath: m_LocalPosition.x

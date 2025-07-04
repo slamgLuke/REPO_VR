@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7548107701450041872}
   - component: {fileID: 6368698047151289318}
   - component: {fileID: 7212530362103720415}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ISDK_DistanceHandGrabInteraction
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -154,9 +154,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1020405636717682586, guid: 2e48e0101ea29b449a5cfa54fffd2c7f, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2125475815721958943, guid: 2e48e0101ea29b449a5cfa54fffd2c7f, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 2334644850692385791, guid: 2e48e0101ea29b449a5cfa54fffd2c7f, type: 3}
       propertyPath: m_Name
       value: wrench_low_final Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 2334644850692385791, guid: 2e48e0101ea29b449a5cfa54fffd2c7f, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3111287725903753541, guid: 2e48e0101ea29b449a5cfa54fffd2c7f, type: 3}
       propertyPath: m_LocalPosition.x

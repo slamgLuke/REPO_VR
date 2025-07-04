@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6136767452652291112}
   - component: {fileID: 3689740834015863530}
   - component: {fileID: 5188533782087886672}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ISDK_DistanceHandGrabInteraction
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -206,6 +206,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: case_low_final Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 3132319817985694084, guid: c467509ce6f95a64cab300a1acfd2a44, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 3760615753895524130, guid: c467509ce6f95a64cab300a1acfd2a44, type: 3}
       propertyPath: hitSound
       value: 
@@ -214,6 +218,26 @@ PrefabInstance:
       propertyPath: deathSound
       value: 
       objectReference: {fileID: 8300000, guid: 1f6c06c315dfccd49bf9abac3ae430d5, type: 3}
+    - target: {fileID: 6601706670441783490, guid: c467509ce6f95a64cab300a1acfd2a44, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6895732769754089673, guid: c467509ce6f95a64cab300a1acfd2a44, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8741714365739669619, guid: c467509ce6f95a64cab300a1acfd2a44, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8856412552633658333, guid: c467509ce6f95a64cab300a1acfd2a44, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8993952667578341491, guid: c467509ce6f95a64cab300a1acfd2a44, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
