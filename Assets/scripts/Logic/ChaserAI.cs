@@ -1,45 +1,40 @@
 // ChaserAI.cs
 
 using UnityEngine;
-using UnityEngine.AI; // Important: Include the AI namespace
+using UnityEngine.AI;
 
 public class ChaserAI : MonoBehaviour
 {
     [Header("References")]
     public Transform player;
-    public Transform[] patrolPoints; // NEW: An array to hold our waypoints.
+    public Transform[] patrolPoints;
 
     [Header("Behavior Settings")]
-    public float detectionDistance = 15f;
+    public float detectionRadius = 15f;
+    public float eyeHeight = 1.5f; // Altura de los "ojos" del monstruo para el Raycast
     public float chaseSpeed = 3.5f;
-    public float patrolSpeed = 2f; // NEW: A slower speed for when patrolling.
+    public float patrolSpeed = 2f;
 
-    // Private variables
+    // Componentes y estado
     private NavMeshAgent agent;
-    private float distanceToPlayer;
+    private Animator animator;
     private bool isChasing = false;
-    private int currentPatrolIndex = 0; // NEW: To keep track of the current waypoint.
+    private int currentPatrolIndex = 0;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        animator = GetComponent<Animator>();
 
-        // Find the player by tag if not assigned manually
         if (player == null)
         {
             GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
-            if (playerGO != null)
-            {
-                player = playerGO.transform;
-            }
-            else
-            {
-                Debug.LogError("ERROR! Player object with tag 'Player' not found. Disabling AI.");
-                this.enabled = false; // Disable script if no player is found
-            }
+            if (playerGO != null) player = playerGO.transform;
+            else { this.enabled = false; return; }
         }
 
-        // MODIFIED: Start by patrolling, not standing still.
+        // Iniciar patrulla
+        agent.speed = patrolSpeed;
         GoToNextPatrolPoint();
     }
 
@@ -47,69 +42,98 @@ public class ChaserAI : MonoBehaviour
     {
         if (player == null) return;
 
-        // Calculate distance to the player
-        distanceToPlayer = Vector3.Distance(transform.position, player.position);
-
-        // --- Main Logic: Chase or Patrol ---
-
-        // 1. CHASE LOGIC
-        if (distanceToPlayer <= detectionDistance)
+        if (CanSeePlayer())
         {
-            // If we weren't chasing before, start now.
             if (!isChasing)
             {
                 isChasing = true;
-                Debug.Log("Player spotted! Initiating chase.");
-                agent.speed = chaseSpeed; // Switch to faster chase speed
+                agent.speed = chaseSpeed;
             }
-
-            // Set the player as the destination
             agent.SetDestination(player.position);
         }
-        // 2. PATROL LOGIC
         else
         {
-            // If we were just chasing, switch back to patrol mode.
             if (isChasing)
             {
                 isChasing = false;
-                Debug.Log("Player lost... returning to patrol.");
-                agent.speed = patrolSpeed; // Switch back to slower patrol speed
-                // No need to call GoToNextPatrolPoint() here, the logic below handles it.
+                agent.speed = patrolSpeed;
+                GoToNextPatrolPoint();
             }
 
-            // NEW: While patrolling, check if we've reached our destination.
-            // !agent.pathPending ensures the agent has calculated a path.
-            // agent.remainingDistance < 0.5f checks if we are very close to the target.
             if (!agent.pathPending && agent.remainingDistance < 0.5f)
             {
                 GoToNextPatrolPoint();
             }
         }
+
+        UpdateAnimator();
     }
 
-    // NEW FUNCTION: Manages the patrol logic.
-    void GoToNextPatrolPoint()
+    // Comprueba si el jugador está en el radio Y si hay línea de visión directa
+    private bool CanSeePlayer()
     {
-        // If there are no patrol points, do nothing.
-        if (patrolPoints.Length == 0)
+        if (Vector3.Distance(transform.position, player.position) > detectionRadius)
         {
-            Debug.LogWarning("No patrol points assigned to the enemy.");
-            return;
+            return false;
         }
 
-        // Set the agent's destination to the current waypoint in the array.
-        agent.SetDestination(patrolPoints[currentPatrolIndex].position);
+        Vector3 startPoint = transform.position + Vector3.up * eyeHeight;
+        Vector3 directionToPlayer = player.position - startPoint;
+        RaycastHit hit;
 
-        // Update the index for the next waypoint, cycling back to the start.
-        // The '%' (modulo) operator is perfect for creating loops.
+        if (Physics.Raycast(startPoint, directionToPlayer, out hit, detectionRadius))
+        {
+            if (hit.transform == player)
+            {
+                return true; // El rayo golpeó al jugador, hay visión directa.
+            }
+        }
+        return false; // El rayo golpeó una pared o nada.
+    }
+
+    // Actualiza los parámetros del Animator basados en el estado actual
+    void UpdateAnimator()
+    {
+        // Comprueba si el agente se está moviendo
+        bool isMoving = agent.velocity.sqrMagnitude > 0.1f;
+
+        animator.SetBool("IsMoving", isMoving);
+        animator.SetBool("IsChasing", isChasing);
+    }
+
+    void GoToNextPatrolPoint()
+    {
+        if (patrolPoints.Length == 0) return;
+        agent.SetDestination(patrolPoints[currentPatrolIndex].position);
         currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
     }
 
-    // Optional: Draws the detection sphere in the Scene view for easier debugging.
     private void OnDrawGizmosSelected()
     {
+        // 1. Dibuja la esfera de radio de detección en amarillo
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, detectionDistance);
+        Gizmos.DrawWireSphere(transform.position, detectionRadius);
+
+        // Solo dibuja la línea de visión si el jugador existe
+        if (player != null)
+        {
+            // 2. Calcula el punto de origen de la visión (los "ojos" del monstruo)
+            Vector3 startPoint = transform.position + Vector3.up * eyeHeight;
+
+            // 3. Cambia el color de la línea basado en si puede ver al jugador o no
+            //    - Verde: Hay línea de visión directa.
+            //    - Rojo: No hay línea de visión (un obstáculo bloquea el camino).
+            if (CanSeePlayer())
+            {
+                Gizmos.color = Color.green;
+            }
+            else
+            {
+                Gizmos.color = Color.red;
+            }
+
+            // 4. Dibuja la línea recta desde los ojos del monstruo hasta la posición del jugador
+            Gizmos.DrawLine(startPoint, player.position);
+        }
     }
 }
