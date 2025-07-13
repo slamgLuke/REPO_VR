@@ -2,6 +2,7 @@
 
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Audio;
 
 public class ChaserAI : MonoBehaviour
 {
@@ -14,23 +15,43 @@ public class ChaserAI : MonoBehaviour
     public float eyeHeight = 1.5f; // Altura de los "ojos" del monstruo para el Raycast
     public float chaseSpeed = 3.5f;
     public float patrolSpeed = 2f;
+    public float attackDistance = 1f; // How close to get before attacking
+
+    [Header("Audio")]
+    public AudioClip[] walkFootstepSounds;
+    public AudioClip[] runFootstepSounds;
+    private AudioSource audioSource;
 
     // Componentes y estado
     private NavMeshAgent agent;
     private Animator animator;
     private bool isChasing = false;
     private int currentPatrolIndex = 0;
+    private PlayerStatus playerStatus;
+    private bool hasAttacked = false; // Prevents attacking multiple times
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
 
         if (player == null)
         {
             GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
             if (playerGO != null) player = playerGO.transform;
             else { this.enabled = false; return; }
+        }
+
+        if (player != null)
+        {
+            playerStatus = player.GetComponent<PlayerStatus>();
+        }
+        else
+        {
+            Debug.LogError("Chaser AI could not find the Player!");
+            this.enabled = false;
+            return;
         }
 
         // Iniciar patrulla
@@ -66,6 +87,30 @@ public class ChaserAI : MonoBehaviour
             }
         }
 
+        if (!hasAttacked && isChasing && Vector3.Distance(transform.position, player.position) <= attackDistance)
+        {
+            // --- TRIGGER THE ATTACK SEQUENCE ---
+            hasAttacked = true;
+
+            // 1. Stop the agent from moving
+            agent.isStopped = true;
+
+            // 2. Tell the animator to play the attack animation
+            animator.SetBool("attack01", true);
+
+            // 3. Tell the player to start the death sequence
+            if (playerStatus != null)
+            {
+                // We create a new Transform point for the player to look at, using the enemy's eyeHeight
+                Vector3 lookTargetPosition = transform.position + Vector3.up * eyeHeight;
+                // We create a temporary empty GameObject to pass as the target
+                GameObject lookTarget = new GameObject("EnemyLookTarget");
+                lookTarget.transform.position = lookTargetPosition;
+
+                playerStatus.InitiateDeathSequence(lookTarget.transform);
+            }
+        }
+
         UpdateAnimator();
     }
 
@@ -91,14 +136,39 @@ public class ChaserAI : MonoBehaviour
         return false; // El rayo golpeó una pared o nada.
     }
 
+    public void PlayFootstepSound()
+    {
+        // 1. Choose the correct array of sounds based on the AI's state
+        AudioClip[] clips = isChasing ? runFootstepSounds : walkFootstepSounds;
+
+        // 2. If the array is empty, do nothing (to prevent errors)
+        if (clips.Length == 0)
+        {
+            return;
+        }
+
+        // 3. Randomly select one clip from the array
+        AudioClip clipToPlay = clips[Random.Range(0, clips.Length)];
+
+        // 4. Add slight random pitch variation for more natural sound
+        audioSource.pitch = Random.Range(0.95f, 1.05f);
+
+        // 5. Play the chosen clip
+        if (clipToPlay != null)
+        {
+            audioSource.volume = isChasing ? 2.5f : 1.3f; // Adjust volume based on state
+            audioSource.PlayOneShot(clipToPlay);
+        }
+    }
+
     // Actualiza los parámetros del Animator basados en el estado actual
     void UpdateAnimator()
     {
         // Comprueba si el agente se está moviendo
         bool isMoving = agent.velocity.sqrMagnitude > 0.1f;
 
-        animator.SetBool("IsMoving", isMoving);
-        animator.SetBool("IsChasing", isChasing);
+        animator.SetBool("walk", isMoving);
+        animator.SetBool("run", isChasing);
     }
 
     void GoToNextPatrolPoint()
