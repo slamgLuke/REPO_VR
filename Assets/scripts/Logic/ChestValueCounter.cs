@@ -2,33 +2,51 @@ using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using System.Collections;
 
 [RequireComponent(typeof(Collider))]
 public class ChestValueCounter : MonoBehaviour
 {
     [Header("UI")]
-    [Tooltip("Arrastra aquí el objeto TextMeshPro que mostrará el valor total.")]
     [SerializeField] private TextMeshProUGUI totalValueText;
 
-    // Lista para mantener un registro de los objetos detectados dentro del trigger
+    [Header("Fade Config")]
+    [SerializeField] private Image fadeScreen; // Imagen negra en pantalla
+    [SerializeField] private float fadeDuration = 1.5f;
+    [SerializeField] private string menuSceneName = "MenuScene";
+    [SerializeField] private float targetValueToWin = 1000f;
+
     private List<DestructibleObject> detectedObjects = new List<DestructibleObject>();
+    private bool gameEnded = false;
 
     void Start()
     {
-        // Asegurarse de que el collider es un trigger al inicio
+        // Solo establecer como NO_WIN si no es una transición de victoria
+        if (PlayerPrefs.GetString("GAME_STATUS", "") != "WIN")
+        {
+            PlayerPrefs.SetString("GAME_STATUS", "NO_WIN");
+            PlayerPrefs.Save();
+        }
+
         Collider col = GetComponent<Collider>();
         if (!col.isTrigger)
         {
-            Debug.LogWarning("El collider en " + gameObject.name + " no está marcado como 'Is Trigger'. Se activará automáticamente.", this);
+            Debug.LogWarning("El collider no estaba marcado como trigger. Se activará automáticamente.");
             col.isTrigger = true;
         }
-        UpdateTotalValue(); // Actualizar el texto a 0 al inicio
+
+        if (fadeScreen != null)
+        {
+            fadeScreen.color = new Color(0, 0, 0, 0); // transparente al inicio
+        }
+
+        UpdateTotalValue();
     }
 
     private void OnDestroy()
     {
-        // Es una buena práctica desuscribirse de todos los eventos al destruir el objeto
-        // para evitar fugas de memoria (memory leaks).
         foreach (var obj in detectedObjects)
         {
             if (obj != null)
@@ -41,21 +59,11 @@ public class ChestValueCounter : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // Intentamos obtener el script DestructibleObject del objeto que entró
         DestructibleObject destructible = other.GetComponent<DestructibleObject>();
-
-        // Si el objeto tiene el script y no está ya en nuestra lista...
         if (destructible != null && !detectedObjects.Contains(destructible))
         {
-            // Lo añadimos a la lista
             detectedObjects.Add(destructible);
-
-            // Nos suscribimos a su evento OnValueChanged.
-            // Esto es clave para que el total se actualice si el objeto recibe daño (y pierde valor)
-            // MIENTRAS está dentro del detector.
             destructible.OnValueChanged += HandleObjectValueChanged;
-
-            Debug.Log(destructible.name + " entró en el detector.");
             UpdateTotalValue();
         }
     }
@@ -63,39 +71,61 @@ public class ChestValueCounter : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         DestructibleObject destructible = other.GetComponent<DestructibleObject>();
-
-        // Si el objeto que sale tiene el script y está en nuestra lista...
         if (destructible != null && detectedObjects.Contains(destructible))
         {
-            // Nos desuscribimos del evento para no seguir escuchando cambios
             destructible.OnValueChanged -= HandleObjectValueChanged;
-
-            // Lo quitamos de la lista
             detectedObjects.Remove(destructible);
-
-            Debug.Log(destructible.name + " salió del detector.");
             UpdateTotalValue();
         }
     }
 
-    // Este método se llamará cada vez que el valor de un objeto DENTRO del detector cambie.
     private void HandleObjectValueChanged(float newValue)
     {
-        Debug.Log("El valor de un objeto cambió. Recalculando total.");
         UpdateTotalValue();
     }
 
-    // Calcula la suma de los valores de todos los objetos en la lista y actualiza el texto
     private void UpdateTotalValue()
     {
-        // Usamos LINQ para sumar los valores de forma concisa y segura.
-        // `obj => obj.Value` obtiene el valor actual de cada objeto.
         float currentTotal = detectedObjects.Sum(obj => obj.Value);
 
         if (totalValueText != null)
         {
-            // Actualizamos el texto con el formato deseado
             totalValueText.text = $"${(int)currentTotal}";
         }
+
+        if (!gameEnded && currentTotal >= targetValueToWin)
+        {
+            gameEnded = true;
+            StartCoroutine(FadeAndLoadMenu());
+        }
+    }
+
+    private IEnumerator FadeAndLoadMenu()
+    {
+        if (fadeScreen == null)
+        {
+            Debug.LogError("Falta el Image de fadeScreen.");
+            yield break;
+        }
+
+        float timer = 0f;
+        fadeScreen.gameObject.SetActive(true);
+
+        while (timer < fadeDuration)
+        {
+            float alpha = Mathf.Lerp(0, 1, timer / fadeDuration);
+            fadeScreen.color = new Color(0, 0, 0, alpha);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        fadeScreen.color = Color.black;
+
+        // GUARDA que el jugador ganó antes de cargar el menú
+        PlayerPrefs.SetString("GAME_STATUS", "WIN");
+        PlayerPrefs.Save();
+
+        yield return new WaitForSeconds(0.5f);
+        SceneManager.LoadScene(menuSceneName);
     }
 }

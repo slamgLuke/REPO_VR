@@ -40958,6 +40958,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   totalValueText: {fileID: 317993342}
+  fadeScreen: {fileID: 1129779867}
+  fadeDuration: 1.5
+  menuSceneName: MenuScene
+  targetValueToWin: 5000
 --- !u!1 &1548027709
 GameObject:
   m_ObjectHideFlags: 0
@@ -54601,7 +54605,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5926544696429006857, guid: 587de6943a7e2e242b4160e02cfaef23, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.5483475
+      value: -3.233
       objectReference: {fileID: 0}
     - target: {fileID: 5926544696429006857, guid: 587de6943a7e2e242b4160e02cfaef23, type: 3}
       propertyPath: m_LocalPosition.y
@@ -54609,7 +54613,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5926544696429006857, guid: 587de6943a7e2e242b4160e02cfaef23, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.9219513
+      value: -3.308
       objectReference: {fileID: 0}
     - target: {fileID: 5926544696429006857, guid: 587de6943a7e2e242b4160e02cfaef23, type: 3}
       propertyPath: m_LocalRotation.w
