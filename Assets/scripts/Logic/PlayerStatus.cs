@@ -72,6 +72,6 @@ public class PlayerStatus : MonoBehaviour
 
         // 5. What happens next? (e.g., Reload the scene)
         // For example, to reload the current scene:
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene("MenuScene");
     }
 }
