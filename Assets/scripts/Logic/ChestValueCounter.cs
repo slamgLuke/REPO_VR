@@ -122,8 +122,7 @@ public class ChestValueCounter : MonoBehaviour
         fadeScreen.color = Color.black;
 
         // GUARDA que el jugador ganó antes de cargar el menú
-        PlayerPrefs.SetString("GAME_STATUS", "WIN");
-        PlayerPrefs.Save();
+        GameState.SetStatus(GameState.Status.WIN);
 
         yield return new WaitForSeconds(0.5f);
         SceneManager.LoadScene(menuSceneName);

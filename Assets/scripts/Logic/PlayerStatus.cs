@@ -72,8 +72,7 @@ public class PlayerStatus : MonoBehaviour
 
         // 5. What happens next? (e.g., Reload the scene)
         // For example, to reload the current scene:
-        PlayerPrefs.SetString("GAME_STATUS", "NO_WIN");
-        PlayerPrefs.Save();
+        GameState.SetStatus(GameState.Status.NO_WIN);
         SceneManager.LoadScene("MenuScene");
     }
 }
