@@ -214,7 +214,7 @@ public class DestructibleObject : MonoBehaviour
         {
             // Crear una copia del material para poder modificarlo
             Material vrMaterial = new Material(valueText.fontSharedMaterial);
-            vrMaterial.shader = Shader.Find("TextMeshPro/Distance Field Overlay");
+            vrMaterial.shader = Shader.Find("TextMeshPro/Mobile/Distance Field Overlay");
             
             // FORZAR que se renderice SIEMPRE al frente
             vrMaterial.renderQueue = 5000; // Render queue MUY alto
